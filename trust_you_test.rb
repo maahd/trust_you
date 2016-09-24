@@ -102,15 +102,35 @@ class IncludedResourceParams
   # `includes`
   def model_includes
     result = []
+    puts
+    puts "included_resources: #{included_resources}"
     included_resources.each do |x|
       if x.include? "."
         key_value = x.split('.')
-        result << {key_value[0].to_sym => [key_value[1].to_sym]}
+        puts "key_value: #{key_value}"
+        puts "result: #{result}"
+        result.each do |y|
+          puts "y is #{y}"
+          if y.key?(key_value[0].to_sym)
+            puts 'fuck yeah'
+            y[key_value[0].to_sym] << key_value[1].to_sym
+          else
+            result << {key_value[0].to_sym => [key_value[1].to_sym]}
+          end
+          # if result[y].key(:foo)?
+          #   #result[y][key_value[0].to_sym] << key_value[1].to_sym
+          # else
+          #   result << {key_value[0].to_sym => [key_value[1].to_sym]}
+          # end
+        end
+        if result.empty?
+          result << {key_value[0].to_sym => [key_value[1].to_sym]}
+        end
       else
         result << x.to_sym
       end
     end
-    print result
+    puts "result is #{result}"
     return result
   end
 end
@@ -166,7 +186,7 @@ class TestIncludedResourceParams < Test::Unit::TestCase
   #   assert IncludedResourceParams.new('foo,bar').model_includes == [:foo, :bar]
   # end
   #
-  # # hash
+  # hash
   # def test_model_includes_single_two_level_resource
   #   assert IncludedResourceParams.new('foo.bar').model_includes == [{:foo => [:bar]}]
   # end
