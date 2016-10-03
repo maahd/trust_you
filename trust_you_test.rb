@@ -105,32 +105,34 @@ class IncludedResourceParams
     puts
     puts "included_resources: #{included_resources}"
     included_resources.each do |x|
-      if x.include? "."
+      if x.count('.') == 1
         key_value = x.split('.')
         puts "key_value: #{key_value}"
-        puts "result: #{result}"
         result.each do |y|
+          puts "result length: #{result.length}"
           puts "y is #{y}"
           if y.key?(key_value[0].to_sym)
-            puts 'fuck yeah'
+            puts 'key already present'
             y[key_value[0].to_sym] << key_value[1].to_sym
-          else
+            puts "result: #{result}"
+          elsif
             result << {key_value[0].to_sym => [key_value[1].to_sym]}
+            puts "result: #{result}"
           end
-          # if result[y].key(:foo)?
-          #   #result[y][key_value[0].to_sym] << key_value[1].to_sym
-          # else
-          #   result << {key_value[0].to_sym => [key_value[1].to_sym]}
-          # end
         end
         if result.empty?
           result << {key_value[0].to_sym => [key_value[1].to_sym]}
+          puts "result: #{result}"
         end
+      elsif x.count('.') == 2
+        key_value = x.split('.')
+        puts "key_value is #{key_value}"
+        result << {key_value[0].to_sym => [key_value[1].to_sym => [key_value[2].to_sym]]}
+        puts "result: #{result}"
       else
         result << x.to_sym
       end
     end
-    puts "result is #{result}"
     return result
   end
 end
@@ -186,14 +188,14 @@ class TestIncludedResourceParams < Test::Unit::TestCase
   #   assert IncludedResourceParams.new('foo,bar').model_includes == [:foo, :bar]
   # end
   #
-  # hash
+  # # hash
   # def test_model_includes_single_two_level_resource
   #   assert IncludedResourceParams.new('foo.bar').model_includes == [{:foo => [:bar]}]
   # end
 
   def test_model_includes_multiple_two_level_resources
-    assert IncludedResourceParams.new('foo.bar,foo.bat').model_includes == [{:foo => [:bar, :bat]}]
-    #assert IncludedResourceParams.new('foo.bar,baz.bat').model_includes == [{:foo => [:bar]}, {:baz => [:bat]}]
+#    assert IncludedResourceParams.new('foo.bar,foo.bat').model_includes == [{:foo => [:bar, :bat]}]
+    assert IncludedResourceParams.new('foo.bar,baz.bat').model_includes == [{:foo => [:bar]}, {:baz => [:bat]}]
   end
 
   # def test_model_includes_three_level_resources
